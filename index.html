@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>校园活动台 CampusHub · 入口</title>
+<meta name="description" content="校园活动信息分类与质量提示平台 — 功能应用与展示页入口。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,700;1,900&family=Special+Elite&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#E8D9B8; --paper:#D2B48C; --surface:#EFE3C8; --ink:#1A0A00;
+    --text:#1A0A00; --soft:#5C3A1F; --border:#BFA37F;
+    --rust:#8B2500; --gold:#B8860B; --olive:#6B8E23; --navy:#191970; --cream:#E8D9B8;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    font-family:"Oswald","Bebas Neue",Impact,sans-serif;
+    background:
+      radial-gradient(circle at 18% 22%,rgba(184,134,11,.12),transparent 55%),
+      radial-gradient(circle at 82% 78%,rgba(139,37,0,.10),transparent 60%),
+      linear-gradient(135deg,#1A0A00 0%,#3a1500 38%,#8B2500 100%);
+    color:var(--cream);min-height:100vh;line-height:1.55;letter-spacing:.01em;
+    -webkit-font-smoothing:antialiased;
+  }
+  /* 颗粒噪点 */
+  body::before{
+    content:"";position:fixed;inset:0;z-index:9999;pointer-events:none;opacity:.10;mix-blend-mode:overlay;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+    background-size:180px 180px;
+  }
+  /* 暗角 */
+  body::after{
+    content:"";position:fixed;inset:0;z-index:9998;pointer-events:none;
+    background:radial-gradient(ellipse 130% 110% at center,transparent 45%,rgba(26,10,0,.5) 100%);
+  }
+  .wrap{position:relative;z-index:2;max-width:1100px;margin:0 auto;padding:0 22px}
+
+  /* Hero */
+  .hero{padding:7rem 0 3.4rem;text-align:center;border-bottom:1px solid rgba(184,134,11,.4)}
+  .hero__kicker{font-family:"Special Elite",monospace;font-size:12px;letter-spacing:.32em;text-transform:uppercase;color:var(--gold);margin-bottom:1.2rem}
+  .hero__title{
+    font-family:"Playfair Display",serif;font-style:italic;font-weight:900;
+    font-size:clamp(2.6rem,8vw,6rem);line-height:.92;letter-spacing:-.02em;margin:0;
+    color:var(--cream);
+    text-shadow:3px 0 0 rgba(184,134,11,.5),-3px 0 0 rgba(139,37,0,.45);
+  }
+  .hero__sub{font-family:"Playfair Display",serif;font-style:italic;color:var(--gold);margin-top:.7rem;font-size:clamp(1rem,1.8vw,1.3rem)}
+  .hero__meta{font-family:"Special Elite",monospace;font-size:12px;letter-spacing:.14em;color:rgba(232,217,184,.6);margin-top:1.4rem}
+
+  /* 入口卡 */
+  .cards{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin:3.4rem 0 1.6rem}
+  @media (max-width:720px){.cards{grid-template-columns:1fr}}
+  .card{
+    display:block;position:relative;background:rgba(232,217,184,.06);
+    border:1px solid rgba(184,134,11,.45);border-radius:6px;padding:2.2rem 1.8rem 1.8rem;
+    text-decoration:none;color:var(--cream);transition:transform .2s,box-shadow .2s,border-color .2s;
+    box-shadow:6px 6px 0 rgba(26,10,0,.4);overflow:hidden;
+  }
+  .card:hover{transform:translate(-3px,-3px);box-shadow:9px 9px 0 rgba(184,134,11,.5);border-color:var(--gold)}
+  .card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:var(--rust)}
+  .card--b::before{background:var(--olive)}
+  .card__num{font-family:"Special Elite",monospace;font-size:13px;letter-spacing:.2em;color:var(--gold);text-transform:uppercase}
+  .card__title{font-family:"Playfair Display",serif;font-weight:900;font-size:2.2rem;margin:.4rem 0 .3rem;line-height:1.05;color:var(--cream);text-shadow:2px 0 0 rgba(184,134,11,.35)}
+  .card__sub{font-family:"Playfair Display",serif;font-style:italic;color:var(--gold);font-size:1.05rem;margin-bottom:1rem}
+  .card__desc{font-family:"Oswald",sans-serif;font-size:14px;color:rgba(232,217,184,.78);line-height:1.65;letter-spacing:.01em}
+  .card__enter{margin-top:1.5rem;font-family:"Oswald",sans-serif;font-weight:600;letter-spacing:.2em;text-transform:uppercase;font-size:13px;color:var(--gold);display:inline-flex;align-items:center;gap:8px}
+  .card__enter::after{content:"→";transition:transform .2s}
+  .card:hover .card__enter::after{transform:translateX(4px)}
+
+  /* 统计条 */
+  .stats{display:flex;gap:14px;flex-wrap:wrap;justify-content:center;margin:2.2rem 0 0;padding:1.6rem 0;border-top:1px solid rgba(184,134,11,.3);border-bottom:1px solid rgba(184,134,11,.3)}
+  .stat{font-family:"Oswald",sans-serif;font-size:13px;letter-spacing:.04em;color:rgba(232,217,184,.7)}
+  .stat b{font-family:"Playfair Display",serif;font-weight:900;font-size:20px;color:var(--gold);display:block;line-height:1}
+
+  /* 页脚 */
+  .footer{padding:2.6rem 0 3rem;text-align:center;font-family:"Special Elite",monospace;font-size:12px;letter-spacing:.14em;color:rgba(232,217,184,.55);text-transform:uppercase}
+  .footer a{color:var(--gold);text-decoration:none;border-bottom:1px solid rgba(184,134,11,.4)}
+  .footer a:hover{color:var(--cream)}
+
+  /* 顶栏 */
+  .nav{position:relative;z-index:3;padding:18px 22px;border-bottom:1px solid rgba(184,134,11,.3)}
+  .nav__inner{max-width:1100px;margin:0 auto;display:flex;justify-content:space-between;align-items:center}
+  .nav__logo{font-family:"Playfair Display",serif;font-weight:900;font-style:italic;font-size:20px;color:var(--cream);letter-spacing:-.01em}
+  .nav__logo b{color:var(--gold);font-style:normal}
+  .nav__link{font-family:"Oswald",sans-serif;font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);text-decoration:none;border:1px solid rgba(184,134,11,.45);padding:6px 14px;border-radius:3px}
+</style>
+</head>
+<body>
+
+<header class="nav">
+  <div class="nav__inner">
+    <span class="nav__logo">Campus<b>Hub</b></span>
+    <a class="nav__link" href="https://github.com/LIMN12/xiaolin--formal-interview" target="_blank" rel="noopener">GitHub Repo ↗</a>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <section class="hero">
+    <div class="hero__kicker">C·H 16 · LIMN12 · 2026-09-19</div>
+    <h1 class="hero__title">CampusHub</h1>
+    <p class="hero__sub">校园活动信息分类 · 质量评估 · 广告治理 · 复古电影质感</p>
+    <div class="hero__meta">GitHub Pages · https://limn12.github.io/xiaolin--formal-interview/</div>
+  </section>
+
+  <div class="cards">
+    <a class="card" href="campus-hub/index.html">
+      <span class="card__num">Entry 01 · 功能应用</span>
+      <h2 class="card__title">活动台</h2>
+      <p class="card__sub">分类 · 评测 · 提示</p>
+      <p class="card__desc">26 条题目信息结构化分类，区分官方/学生/我发布来源，五维质量评估引擎（完整度/可信度/关联度/时效性/价值度），发起组队与偏好条匹配，广告类内容折叠治理与风险提示。</p>
+      <span class="card__enter">进入功能应用</span>
+    </a>
+
+    <a class="card card--b" href="showcase/index.html">
+      <span class="card__num">Entry 02 · 数据展示</span>
+      <h2 class="card__title">展示页</h2>
+      <p class="card__sub">贡献日历 · 积分榜</p>
+      <p class="card__desc">调取本仓库 GitHub 事项数据，复古胶片电影质感呈现：页面1 贡献日历图（commits 按日期热力），页面2 积分榜（Commits/Files 双 Tab）。纯矢量复古插画，零图片依赖。</p>
+      <span class="card__enter">进入展示页</span>
+    </a>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><b>3</b>版本迭代</div>
+    <div class="stat"><b>2</b>页面入口</div>
+    <div class="stat"><b>5</b>任务模块</div>
+    <div class="stat"><b>0</b>构建依赖</div>
+  </div>
+
+</div>
+
+<footer class="footer">
+  CampusHub · 复古电影质感 · 纯前端 零依赖 零构建 &nbsp;·&nbsp; <a href="https://github.com/LIMN12/xiaolin--formal-interview" target="_blank" rel="noopener">LIMN12 / xiaolin--formal-interview</a>
+</footer>
+
+</body>
+</html>

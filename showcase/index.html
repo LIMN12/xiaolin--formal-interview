@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CampusHub · 沉浸式叙事 — GitHub 数据展示</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,700;1,900&family=Special+Elite&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/showcase.css">
+</head>
+<body data-page="story" class="vignette">
+
+<!-- 全局颗粒噪点层 -->
+<div class="grain" aria-hidden="true"></div>
+
+<!-- 固定导航 -->
+<header class="nav">
+  <a class="nav__logo" href="index.html">C·H <b>LIMN12</b></a>
+  <nav class="nav__menu">
+    <a href="standings.html">Standings</a>
+    <a href="https://github.com/LIMN12/xiaolin--formal-interview" target="_blank" rel="noopener">Repo</a>
+    <button class="menu-btn" aria-label="菜单"><span></span><span></span><span></span></button>
+  </nav>
+</header>
+
+<main class="story">
+
+  <!-- 幕1：标题引入（巨型破边文字 + 速度线） -->
+  <section class="screen screen--dark">
+    <div class="speed-lines" aria-hidden="true">
+      <i style="top:18%;width:40vw;animation-delay:.0s"></i>
+      <i style="top:32%;width:55vw;animation-delay:.3s"></i>
+      <i style="top:68%;width:30vw;animation-delay:.6s"></i>
+    </div>
+    <p class="screen__meta" data-meta="latest-date">2026-09-19</p>
+    <h1 class="giant giant-cream break-r offset-text" style="margin-top:1rem">IT'S THE CAMPUS</h1>
+    <p class="screen__meta" style="margin-top:1.4rem" data-meta="repo-name">LIMN12/xiaolin--formal-interview</p>
+  </section>
+
+  <!-- 幕2：双图叙事（主图 + 辅图 + 时间标注） -->
+  <section class="screen screen--paper paper-bg">
+    <div class="figure-pair">
+      <figure class="figure figure--main" data-fig="main">
+        <!-- JS 注入：作者头像 + caption -->
+      </figure>
+      <figure class="figure figure--sub" data-fig="sub">
+        <!-- JS 注入：复古插画 + caption -->
+      </figure>
+    </div>
+    <p class="screen__meta" style="text-align:center;margin-top:3rem;color:var(--rust)">— Monza · Beijing · 2026 —</p>
+  </section>
+
+  <!-- 幕3：标题续接（完成语义，破左） -->
+  <section class="screen screen--rust">
+    <h1 class="giant giant--serif giant-cream break-l offset-text">that builds us.</h1>
+    <p class="screen__meta" style="margin-top:1.6rem;color:var(--gold-bright);max-width:30rem">
+      把来源不同、质量不一的校园信息，整理成同学能快速发现、理解、参与的结构化列表。
+    </p>
+  </section>
+
+  <!-- 幕4：章节叙事（commits → 跨屏章节） -->
+  <section class="screen screen--dark">
+    <div style="max-width:1100px;margin:0 auto;width:100%">
+      <p class="screen__meta" style="color:var(--gold-bright)">Chapters · Commits as Story</p>
+      <h2 class="finale-tag giant-cream offset-text" style="margin:1rem 0 2.4rem">THREE COMMITS,<br>ONE CAMPUS.</h2>
+      <div class="chapter-list" data-chapters>
+        <!-- JS 注入：每个 commit 作为一个章节 -->
+      </div>
+    </div>
+  </section>
+
+  <!-- 幕5：尾幕统计 + 续接 -->
+  <section class="screen screen--paper paper-bg">
+    <div style="text-align:center;margin-bottom:2.4rem">
+      <span class="stamp">Repo Standings · 2026-09-19</span>
+    </div>
+    <div class="finale-grid" data-finale>
+      <!-- JS 注入：commits/files/issues/releases 统计 -->
+    </div>
+    <h2 class="finale-tag offset-ink" style="text-align:center;margin-top:4rem;color:var(--rust)">
+      TO BE<br>CONTINUED.
+    </h2>
+    <p class="screen__meta" style="text-align:center;margin-top:2rem">
+      数据源自 GitHub · <a href="https://github.com/LIMN12/xiaolin--formal-interview" target="_blank" rel="noopener" style="text-decoration:underline;text-underline-offset:3px">LIMN12/xiaolin--formal-interview</a>
+    </p>
+    <p class="screen__meta" style="text-align:center;margin-top:1rem">
+      <a href="standings.html" style="color:var(--rust);font-family:var(--font-display);font-size:1.1rem;letter-spacing:.2em;text-transform:uppercase">→ 查看积分榜 Standings</a>
+    </p>
+  </section>
+
+</main>
+
+<footer class="footer">
+  CampusHub Showcase · 复古胶片质感展示页 · 数据调取自 GitHub REST API
+</footer>
+
+<script src="js/showcase.js"></script>
+</body>
+</html>

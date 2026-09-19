@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CampusHub · Standings 积分榜 — GitHub 数据展示</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,700;1,900&family=Special+Elite&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/showcase.css">
+</head>
+<body data-page="standings" class="vignette">
+
+<!-- 全局颗粒噪点层 -->
+<div class="grain" aria-hidden="true"></div>
+
+<!-- 固定导航 -->
+<header class="nav">
+  <a class="nav__logo" href="index.html">C·H <b>LIMN12</b></a>
+  <nav class="nav__menu">
+    <a href="index.html">Story</a>
+    <a href="https://github.com/LIMN12/xiaolin--formal-interview" target="_blank" rel="noopener">Repo</a>
+    <button class="menu-btn" aria-label="菜单"><span></span><span></span><span></span></button>
+  </nav>
+</header>
+
+<!-- Hero：全宽复古背景 + 巨型压缩标题 + 数据浮卡 -->
+<section class="hero">
+  <div class="hero__bg" aria-hidden="true" id="heroArt"></div>
+  <div class="hero__veil"></div>
+  <div class="hero__content">
+    <h1 class="hero__title offset-text">STANDINGS</h1>
+    <p class="hero__sub" data-hero-sub>校园活动台 CampusHub · 2026</p>
+  </div>
+  <aside class="stats-card" data-stats>
+    <!-- JS 注入：仓库统计浮卡 -->
+  </aside>
+</section>
+
+<!-- 主体：标题 + 季节选择器 + Tab + 表格 -->
+<section class="standings-main">
+  <div class="main-head">
+    <div>
+      <h2 class="main-head__title offset-ink">
+        <small>C·H 16 · LIMN12</small>
+        STANDINGS 2026
+      </h2>
+    </div>
+    <div class="season-pick">
+      <span>Choose a season</span>
+      <select aria-label="赛季">
+        <option>2026</option>
+        <option>2025</option>
+      </select>
+      <span>▼</span>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab tab--active" data-tab="commits">Commits</button>
+    <button class="tab" data-tab="files">Files</button>
+  </div>
+
+  <div class="stab-table" data-commits-table>
+    <!-- JS 注入：commits 表（最新 commit 行高亮） -->
+  </div>
+
+  <div class="stab-table" data-files-table style="display:none">
+    <!-- JS 注入：files 表（README 行高亮） -->
+  </div>
+</section>
+
+<!-- 图库：浅色打断区 + 横向滚动卡片 + 箭头导航 -->
+<section class="gallery">
+  <div class="gallery__head">
+    <h3 class="gallery__title offset-ink">Photogallery</h3>
+    <div class="gallery__nav">
+      <button data-gallery-prev aria-label="上一张">←</button>
+      <button data-gallery-next aria-label="下一张">→</button>
+    </div>
+  </div>
+  <p class="screen__meta" style="margin-bottom:1.2rem;color:var(--ink);opacity:.7">commits & files · 复古海报</p>
+  <div class="gallery__track" data-gallery>
+    <!-- JS 注入：commits + files 作为复古卡片 -->
+  </div>
+</section>
+
+<footer class="footer">
+  CampusHub Showcase · 积分榜展示页 · 数据调取自 GitHub REST API ·
+  <a href="index.html" style="color:var(--gold-bright)">← 返回叙事页</a>
+</footer>
+
+<!-- Hero 复古背景 SVG（纯矢量，替代位图插图） -->
+<script>
+document.getElementById("heroArt").innerHTML = `<svg viewBox="0 0 800 600" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%">
+  <defs>
+    <pattern id="hs" width="44" height="44" patternUnits="userSpaceOnUse">
+      <circle cx="22" cy="22" r="1.4" fill="#1A0A00" opacity="0.16"/>
+    </pattern>
+  </defs>
+  <rect width="800" height="600" fill="#1A0A00"/>
+  ${Array.from({length:8},(_,i)=>`<rect y="${i*75}" width="800" height="75" fill="${["#8B2500","#6B1F00","#B8860B","#6B8E23","#CC5500","#191970","#1A0A00","#8B2500"][i]}" opacity="0.94"/>`).join("")}
+  <rect width="800" height="600" fill="url(#hs)"/>
+  <circle cx="640" cy="170" r="96" fill="#DAA520" opacity="0.86"/>
+  <circle cx="640" cy="170" r="54" fill="#8B2500"/>
+  <path d="M120 470 L260 470 L190 300 Z" fill="#1A0A00" opacity="0.6"/>
+  ${Array.from({length:14},(_,i)=>`<rect x="${20+i*56}" y="540" width="36" height="20" fill="${["#D2B48C","#B8860B","#6B8E23","#CC5500"][i%4]}" opacity="0.7"/>`).join("")}
+</svg>`;
+</script>
+
+<script src="js/showcase.js"></script>
+</body>
+</html>

@@ -1,0 +1,30 @@
+# 操作系统
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# 编辑器/IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# 日志与临时
+*.log
+*.tmp
+*.bak
+
+# Node（预留，当前为纯前端项目）
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# 构建产物
+dist/
+build/
+
+# 本地环境
+.env
+.env.local

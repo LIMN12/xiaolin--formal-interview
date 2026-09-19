@@ -24,6 +24,7 @@ const TYPES = {
   material: { key: 'material', label: '学习资料' },
   supplement: { key: 'supplement', label: '补充通知' },
   observation: { key: 'observation', label: '观摩' },
+  teaming: { key: 'teaming', label: '组队' },
   ad: { key: 'ad', label: '推广/广告' },
 };
 
@@ -429,4 +430,82 @@ const STATUS_LABELS = {
   risk: { label: '风险提示', tone: 'risk' },
 };
 
-window.CampusData = { TODAY, SOURCES, TYPES, QUALITIES, STATUS_LABELS, ACTIVITIES };
+// 发起组队 / 发布表单可选项（任务2 偏好条用）
+const PUBLISH_OPTIONS = {
+  roles: ['开发', '设计', '材料', '科研助理', '摄影志愿者', '学习者', '搭子', '运营', '其他'],
+  skills: ['Web前端', '后端', 'AI', '算法', 'Git', '创新', '项目实战', '数据整理', '实验', 'CTF', 'Web安全', '摄影', '创意', '零基础', '工具开发', 'UI设计'],
+  times: ['工作日晚间', '周末上午', '周末下午', '周末晚间', '灵活/长期', '短期集中'],
+  levels: [
+    { v: 'all', t: '不限' },
+    { v: 'beginner', t: '零基础友好' },
+    { v: 'freshman-sophomore', t: '大一大二' },
+    { v: 'sophomore+', t: '大二及以上' },
+  ],
+};
+
+// 广告/推广关键词（任务3 广告治理：自动降级）
+const AD_KEYWORDS = [
+  '私人微信', '加微信', '购买链接', '代购', '兼职日结', '零门槛日结',
+  '商家优惠', '优惠券', '免费领', '扫码福利', '刷单', '高额佣金', '代理',
+];
+
+// 扫描一条信息是否命中广告关键词
+function scanAdRisk(a) {
+  const text = [a.title, a.raw, a.requirement, a.contact, a.qualityNote].filter(Boolean).join(' ');
+  const hits = AD_KEYWORDS.filter((k) => text.includes(k));
+  return { hits, isAd: hits.length > 0 || a.type === 'ad' };
+}
+
+// ---------- localStorage 持久化 ----------
+function loadUserPublished() {
+  try {
+    return JSON.parse(localStorage.getItem('campushub_published') || '[]');
+  } catch (e) {
+    return [];
+  }
+}
+
+function saveUserPublished(list) {
+  localStorage.setItem('campushub_published', JSON.stringify(list));
+}
+
+// 举报记录 { id: 次数 }
+function loadReports() {
+  try {
+    return JSON.parse(localStorage.getItem('campushub_reports') || '{}') || {};
+  } catch (e) {
+    return {};
+  }
+}
+
+function saveReports(map) {
+  localStorage.setItem('campushub_reports', JSON.stringify(map));
+}
+
+function reportCount(id) {
+  return loadReports()[id] || 0;
+}
+
+// 合并官方 26 条 + 用户发布；对用户发布做广告关键词自动降级
+function getAllActivities() {
+  const user = loadUserPublished().map((u) => {
+    const item = { ...u, userPublished: true };
+    const ad = scanAdRisk(item);
+    if (ad.isAd && item.type !== 'ad') {
+      item.type = 'ad';
+      item.quality = 'suspicious';
+      item.qualityNote = '系统检测到推广/引流关键词，已自动降级为广告类，请谨慎。';
+      item.warning = `命中关键词：${ad.hits.join('、')}。与校园活动关联较弱，请谨慎判断。`;
+    }
+    return item;
+  });
+  return [...ACTIVITIES, ...user];
+}
+
+window.CampusData = {
+  TODAY, SOURCES, TYPES, QUALITIES, STATUS_LABELS, ACTIVITIES,
+  PUBLISH_OPTIONS, AD_KEYWORDS,
+  loadUserPublished, saveUserPublished,
+  loadReports, saveReports, reportCount,
+  scanAdRisk, getAllActivities,
+};

@@ -29,6 +29,7 @@
           <button class="tab active" data-source="all">全部 <span class="count"></span></button>
           <button class="tab" data-source="official">学院/官方 <span class="count"></span></button>
           <button class="tab" data-source="student">学生自发 <span class="count"></span></button>
+          <button class="tab" data-source="mine">我发布的 <span class="count"></span></button>
         </div>
       </div>
       <div class="toolbar-row">
@@ -47,6 +48,7 @@
             <option value="material">学习资料</option>
             <option value="supplement">补充通知</option>
             <option value="observation">观摩</option>
+            <option value="teaming">组队</option>
             <option value="ad">推广/广告</option>
           </select>
         </div>
@@ -61,6 +63,8 @@
         </div>
         <input class="search" id="search" type="search" placeholder="搜索标题、内容或关键词…" />
         <div class="right-tools">
+          <button class="btn" id="teamBtn">发起组队</button>
+          <button class="btn primary" id="publishBtn">发布活动</button>
           <button class="btn" id="resetBtn">重置筛选</button>
         </div>
       </div>
@@ -77,11 +81,27 @@
     </div>
   </div>
 
+  <!-- 发布弹层（任务2） -->
+  <div class="modal-mask" id="publishMask">
+    <div class="modal modal-wide" role="dialog" aria-modal="true">
+      <div id="publishBody"></div>
+    </div>
+  </div>
+
+  <!-- 组队匹配弹层（任务2） -->
+  <div class="modal-mask" id="matchMask">
+    <div class="modal modal-wide" role="dialog" aria-modal="true">
+      <div id="matchBody"></div>
+    </div>
+  </div>
+
   <footer class="app-footer">
-    CampusHub · 任务1：来源/类型/质量分类展示 + 风险提示 · 数据来自考核题目模拟信息
+    CampusHub · 任务1 分类展示 + 任务2 发起组队与偏好条 + 任务3 质量评估与广告治理 · 数据来自考核题目模拟信息
   </footer>
 
   <script src="js/data.js"></script>
+  <script src="js/assess.js"></script>
   <script src="js/app.js"></script>
+  <script src="js/publish.js"></script>
 </body>
 </html>

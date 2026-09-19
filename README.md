@@ -98,15 +98,22 @@ CampusHub 把这些信息按来源、类型、质量、时效四个维度分类�
 xiaolin--formal-interview/
 ├── README.md                # 项目说明（本文件）
 ├── .gitignore
-└── campus-hub/              # 源码目录
-    ├── index.html           # 页面骨架：统计条 + 工具栏 + 卡片网格 + 详情/发布/发起组队弹层
+├── campus-hub/              # 功能应用源码（任务1-3）
+│   ├── index.html           # 页面骨架：统计条 + 工具栏 + 卡片网格 + 详情/发布/发起组队弹层
+│   ├── css/
+│   │   └── style.css        # 卡片风格 + 来源/质量配色 + 表单 + 评估卡 + 偏好条 + 折叠卡
+│   └── js/
+│       ├── data.js          # 26 条题目信息结构化 + 广告关键词扫描 + 发布/举报存储
+│       ├── assess.js        # 五维质量评估引擎（完整度/可信度/关联度/时效性/价值度）
+│       ├── app.js           # 渲染 + 多维筛选 + 详情弹层(含评估) + 收藏 + 我发布的 + 广告治理
+│       └── publish.js       # 发布活动表单 + 发起组队（偏好条滑块+标签）
+└── showcase/                # 展示页源码（任务4 页面优化）
+    ├── index.html           # 页面1：贡献日历图（GitHub 数据驱动）
+    ├── standings.html       # 页面2：积分榜（基础网页）
     ├── css/
-    │   └── style.css        # 卡片风格 + 来源/质量配色 + 表单 + 评估卡 + 偏好条 + 折叠卡
+    │   └── showcase.css     # 复古电影质感样式（图3 复古印刷配色统一）
     └── js/
-        ├── data.js          # 26 条题目信息结构化 + 广告关键词扫描 + 发布/举报存储
-        ├── assess.js        # 五维质量评估引擎（完整度/可信度/关联度/时效性/价值度）
-        ├── app.js           # 渲染 + 多维筛选 + 详情弹层(含评估) + 收藏 + 我发布的 + 广告治理
-        └── publish.js       # 发布活动表单 + 发起组队（偏好条滑块+标签）
+        └── showcase.js      # GitHub REST API 调取 + 日历/积分榜渲染
 ```
 
 ## 六、本版本说明（v2）
@@ -125,3 +132,35 @@ xiaolin--formal-interview/
 - HTML5 + 原生 CSS3 + 原生 JavaScript（ES6+），零依赖、零构建。
 - 数据持久化：浏览器 `localStorage`。
 - 信息分类与质量评测逻辑均在 `js/data.js` 与 `js/app.js` 中实现，可读可改。
+
+## 八、展示页 showcase（任务4 · 页面优化 v3）
+
+> 版本：第三版；页面优化。在 campus-hub 功能应用之外，新增 `showcase/` 两个纯展示页，调取本仓库 GitHub 数据，复古胶片电影质感。
+
+### 产品名称
+
+**CampusHub Showcase** —— 基于本仓库 GitHub 事项数据的复古电影质感展示页。
+
+### 解决的问题
+
+功能应用 campus-hub 解决「信息分类与质量评估」；展示页 showcase 解决「让仓库的开发轨迹被直观看见」：把 commits、文件、issues、releases 这些 GitHub 事项，以电影海报式的复古视觉呈现，既能当作品集展示页，也让评审一眼看清仓库的演进脉络。
+
+### 主要功能
+
+1. **页面1 · 贡献日历图**（`showcase/index.html`）：按 GitHub 贡献热力图思路，把 2026 年全年 12 个月排成日历网格，按当天 commit 数量分四级配色（做旧米 → 芥末金 → 橙 → 铁锈红），仓库的 commit 日期高亮；下方倒序时间线展示每条 commit 的标题、作者、SHA、时间。
+2. **页面2 · 积分榜**（`showcase/standings.html`）：参考赛事积分榜排版，深色 Hero + 巨型 `STANDINGS` 标题 + 仓库统计浮卡；主体为 `Commits / Files` 双 Tab 表格，最新 commit 行用橄榄绿高亮贯穿；底部浅色图库横向滚动卡片阵列 + 箭头导航。
+3. **数据调取**：`showcase.js` 实时 `fetch` GitHub REST API（commits/contents/issues/pulls/releases + 仓库元信息）；`file://` 直开或网络受限时自动回退 2026-09-19 同步的本地快照，双击即开不报错。
+
+### 运行或使用说明
+
+1. 双击 `showcase/index.html` 用浏览器打开（走本地快照数据，无需联网）。
+2. 如需实时调取 GitHub 数据：用 VS Code Live Server 打开 `showcase/` 目录，访问 `index.html` / `standings.html`。
+3. 两页之间通过底部链接互相跳转。
+
+### 自主设计的实用或创新内容
+
+1. **复古胶片电影质感系统**：配色取自参考图3 的复古印刷色（铁锈红 / 芥末金 / 做旧米 / 深棕黑 + 藏蓝/橄榄绿/橙层次），叠加 SVG 颗粒噪点动画层 + 径向暗角 + 套色偏移文字（青/红错位模拟印刷对版不准），全站色调统一。
+2. **字体三重奏**：Oswald（压缩无衬线巨型标题）+ Playfair Display（衬线电影海报）+ Special Elite（打字机复古标注），不沿用 campus-hub 的字体。
+3. **纯矢量复古插画**：星形、太阳轮、条纹色块、小号手剪影等插图全部 SVG 手绘，不引入位图，零图片依赖。
+4. **GitHub 事项 → 日历热力**：把仓库 commits 按日期聚合成贡献日历，让"3 个 commit 都在 09-19"这一事实一眼可见，比 commit 列表更直观。
+5. **实时调取 + 快照兜底**：纯前端、零依赖、零构建，但仍能真正调取 GitHub 数据；离线降级到快照，保证展示页任何时候都能打开。

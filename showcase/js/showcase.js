@@ -145,54 +145,59 @@ const ILL = {
   </svg>`,
 };
 
-/* ---------- 渲染：页面1 沉浸式叙事 ---------- */
-function renderStory(d) {
+/* ---------- 渲染：页面1 贡献日历图（任务四页面优化） ---------- */
+function renderCalendar(d) {
   const repo = d.repo;
   const commits = d.commits;
   const latest = commits[0];
-  const first = commits[commits.length - 1];
 
   // 注入导航
   document.querySelector(".nav__logo b").textContent = repo.owner_login.toUpperCase();
 
-  // 幕1 巨型标题：用 owner + 仓库主题做跨屏断句
-  // "IT'S THE CAMPUS" → "THAT BUILDS US"
-  // 已在 HTML 写死，此处仅注入 meta
-  document.querySelectorAll("[data-meta=latest-date]").forEach(el => {
-    el.textContent = fmt.date(latest.date) + " · " + fmt.time(latest.date);
-  });
-  document.querySelectorAll("[data-meta=repo-name]").forEach(el => {
-    el.textContent = repo.full_name;
-  });
+  // Hero 副标题
+  const hs = document.querySelector("[data-cal-sub]");
+  if (hs) hs.textContent = repo.full_name + " · 最近推送 " + fmt.date(repo.pushed_at || latest.date);
 
-  // 双图叙事：主图 = 作者头像（真实 GitHub 数据图），辅图 = 复古插画
-  const figMain = document.querySelector("[data-fig=main]");
-  if (figMain) {
-    figMain.innerHTML = `<img src="${repo.owner_avatar}" alt="${repo.owner_login} avatar" loading="lazy">
-      <figcaption>${repo.owner_login} · ${repo.public_repos} repos · ${fmt.date(repo.created_at)}</figcaption>`;
-  }
-  const figSub = document.querySelector("[data-fig=sub]");
-  if (figSub) {
-    figSub.innerHTML = `${ILL.trumpeter}<figcaption>Beijing · ${fmt.date(latest.date)}</figcaption>`;
-    figSub.insertAdjacentHTML("afterbegin", `<span class="badge-star">${ILL.star("#DAA520")}</span>`);
-  }
+  // 按 月-日 聚合 commit 计数
+  const map = {};
+  commits.forEach(c => {
+    const dt = new Date(c.date);
+    const k = (dt.getMonth() + 1) + "-" + dt.getDate();
+    map[k] = (map[k] || 0) + 1;
+  });
+  const lvl = n => n === 0 ? "" : n === 1 ? "cal-day--lvl1" : n === 2 ? "cal-day--lvl2" : "cal-day--lvl3";
 
-  // 章节列表：commits → 叙事章节
-  const cl = document.querySelector("[data-chapters]");
-  if (cl) {
-    cl.innerHTML = commits.map((c, i) => {
-      const role = c.role || (i === 0 ? "latest" : "history");
-      return `<article class="chap">
-        <div class="chap__num">0${commits.length - i}</div>
-        <div class="chap__title">${c.message}
-          <small>role · ${role}</small>
-        </div>
-        <div class="chap__date">${fmt.date(c.date)} ${fmt.time(c.date)}</div>
-      </article>`;
+  // 年度日历 2026（12 个月小日历）
+  const yc = document.querySelector("[data-cal-year]");
+  if (yc) {
+    const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+    const dow = ["S","M","T","W","T","F","S"];
+    yc.innerHTML = months.map((m, mi) => {
+      const days = new Date(2026, mi + 1, 0).getDate();
+      const first = new Date(2026, mi, 1).getDay();
+      let cells = dow.map(d => `<span class="cal-dow">${d}</span>`).join("");
+      for (let i = 0; i < first; i++) cells += `<span class="cal-day cal-day--empty"></span>`;
+      for (let day = 1; day <= days; day++) {
+        const k = (mi + 1) + "-" + day;
+        const n = map[k] || 0;
+        cells += `<span class="cal-day ${lvl(n)}">${day}</span>`;
+      }
+      return `<div class="cal-month"><div class="cal-month__name">${m}</div><div class="cal-month__grid">${cells}</div></div>`;
     }).join("");
   }
 
-  // 尾幕统计
+  // 时间线：commits 倒序
+  const tl = document.querySelector("[data-cal-timeline]");
+  if (tl) {
+    tl.innerHTML = commits.map(c =>
+      `<div class="cal-event">
+        <div class="cal-event__date">${fmt.date(c.date)} ${fmt.time(c.date)}</div>
+        <div class="cal-event__title">${c.message}<small>${c.author} · ${c.role || "commit"}</small></div>
+        <div class="cal-event__sha">${c.short}</div>
+      </div>`).join("");
+  }
+
+  // 统计
   const fg = document.querySelector("[data-finale]");
   if (fg) {
     fg.innerHTML = `
@@ -303,6 +308,6 @@ function renderStandings(d) {
 /* ---------- 启动 ---------- */
 window.addEventListener("DOMContentLoaded", async () => {
   const data = await loadGitHub();
-  if (document.body.dataset.page === "story") renderStory(data);
+  if (document.body.dataset.page === "calendar") renderCalendar(data);
   if (document.body.dataset.page === "standings") renderStandings(data);
 });

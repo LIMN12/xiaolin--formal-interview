@@ -400,6 +400,63 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 }
 
 /* ============================================================
+   页面1 · 贡献日历图（任务四页面优化）
+   ============================================================ */
+.cal-hero{
+  position:relative;min-height:70vh;
+  display:flex;flex-direction:column;justify-content:flex-end;
+  padding:7rem 2.2rem 3rem;overflow:hidden;
+}
+.cal-hero__bg{position:absolute;inset:0;z-index:0}
+.cal-hero__bg svg{width:100%;height:100%}
+.cal-hero__veil{position:absolute;inset:0;z-index:1;background:linear-gradient(180deg,rgba(26,10,0,.2),rgba(26,10,0,.6) 70%,var(--paper))}
+.cal-hero__content{position:relative;z-index:2;max-width:1500px;margin:0 auto;width:100%}
+.cal-hero__title{
+  font-family:var(--font-display);font-weight:700;text-transform:uppercase;
+  font-size:clamp(3rem,12vw,10rem);line-height:.84;letter-spacing:-.02em;color:var(--cream);
+}
+.cal-hero__sub{font-family:var(--font-serif);font-style:italic;color:var(--gold-bright);margin-top:.6rem;font-size:clamp(1rem,1.8vw,1.4rem)}
+
+.cal-section{background:var(--paper);padding:3rem 2.2rem}
+.cal-section--dark{background:var(--ink);color:var(--cream)}
+.cal-section__head{max-width:1500px;margin:0 auto 1.6rem}
+.cal-section__title{font-family:var(--font-display);font-weight:600;text-transform:uppercase;font-size:clamp(1.6rem,3.6vw,2.6rem);color:var(--ink);letter-spacing:-.01em}
+.cal-section--dark .cal-section__title{color:var(--cream)}
+.cal-section__title small{display:block;font-family:var(--font-type);font-size:.74rem;letter-spacing:.2em;opacity:.65;margin-bottom:.4rem}
+
+/* 年度日历网格：12 个月 */
+.cal-year{display:grid;grid-template-columns:repeat(12,1fr);gap:1rem;max-width:1500px;margin:0 auto}
+.cal-month{background:var(--cream);border:1px solid var(--ink);padding:.7rem;box-shadow:3px 3px 0 var(--rust-deep)}
+.cal-month__name{font-family:var(--font-display);font-weight:600;font-size:.7rem;text-transform:uppercase;letter-spacing:.14em;color:var(--rust);margin-bottom:.5rem;text-align:center}
+.cal-month__grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px}
+.cal-dow{font-family:var(--font-type);font-size:.5rem;text-align:center;opacity:.5;text-transform:uppercase}
+.cal-day{
+  aspect-ratio:1/1;background:var(--paper-deep);
+  font-family:var(--font-type);font-size:.52rem;color:var(--ink);opacity:.5;
+  display:flex;align-items:center;justify-content:center;
+}
+.cal-day--empty{background:transparent;opacity:.15}
+.cal-day--lvl1{background:var(--gold);opacity:.9;color:var(--ink)}
+.cal-day--lvl2{background:var(--orange);opacity:.95;color:var(--cream)}
+.cal-day--lvl3{background:var(--rust);opacity:1;color:var(--cream);box-shadow:inset 0 0 0 2px var(--gold-bright)}
+.cal-day--today{box-shadow:inset 0 0 0 2px var(--ink)}
+
+.cal-legend{display:flex;gap:.6rem;align-items:center;justify-content:center;margin-top:1.6rem;font-family:var(--font-type);font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink);opacity:.8}
+.cal-legend i{display:inline-block;width:14px;height:14px;border:1px solid var(--ink)}
+.cal-legend .lg0{background:var(--paper-deep)}
+.cal-legend .lg1{background:var(--gold)}
+.cal-legend .lg2{background:var(--orange)}
+.cal-legend .lg3{background:var(--rust)}
+
+/* 时间线 */
+.cal-timeline{max-width:1100px;margin:0 auto}
+.cal-event{display:grid;grid-template-columns:90px 1fr auto;gap:1.4rem;align-items:baseline;padding:1.1rem 0;border-bottom:1px dashed rgba(216,217,184,.2)}
+.cal-event__date{font-family:var(--font-type);font-size:.78rem;letter-spacing:.12em;color:var(--gold-bright)}
+.cal-event__title{font-family:var(--font-serif);font-size:1.3rem;color:var(--cream);line-height:1.3}
+.cal-event__title small{display:block;font-family:var(--font-type);font-size:.7rem;opacity:.65;margin-top:.25rem}
+.cal-event__sha{font-family:var(--font-type);font-size:.78rem;color:var(--rust-bright);opacity:.85}
+
+/* ============================================================
    响应式
    ============================================================ */
 @media (max-width:880px){
@@ -417,4 +474,10 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
   .stats-card{position:static;margin-top:1.2rem;right:auto;bottom:auto}
   .stab-row{grid-template-columns:48px 1fr 120px;gap:.6rem;font-size:.9rem}
   .stab-row__sha,.stab-row__author{display:none}
+  .cal-year{grid-template-columns:repeat(2,1fr);gap:.6rem}
+  .cal-event{grid-template-columns:1fr;gap:.3rem}
+  .cal-event__sha{grid-column:1}
+}
+@media (max-width:480px){
+  .cal-year{grid-template-columns:1fr}
 }

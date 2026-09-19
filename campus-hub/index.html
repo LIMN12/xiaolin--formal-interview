@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>校园活动台 CampusHub · 活动信息分类与质量提示</title>
+  <meta name="description" content="面向大学生的校园活动与机会信息分类平台，区分官方与学生自发来源，识别信息质量并对广告类内容给出风险提示。" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <header class="app-header">
+    <div class="wrap">
+      <div class="brand">
+        <h1>校园活动台 CampusHub</h1>
+        <span class="tag">分类 · 评测 · 提示</span>
+      </div>
+      <div class="date-chip">时间背景 2026-09-19</div>
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- 统计条 -->
+    <section class="stats" id="stats"></section>
+
+    <!-- 筛选工具栏 -->
+    <section class="toolbar">
+      <div class="toolbar-row">
+        <div class="tab-group" id="sourceTabs">
+          <button class="tab active" data-source="all">全部 <span class="count"></span></button>
+          <button class="tab" data-source="official">学院/官方 <span class="count"></span></button>
+          <button class="tab" data-source="student">学生自发 <span class="count"></span></button>
+        </div>
+      </div>
+      <div class="toolbar-row">
+        <div class="field">
+          <label for="typeSelect">类型</label>
+          <select class="select" id="typeSelect">
+            <option value="all">全部类型</option>
+            <option value="training">训练营</option>
+            <option value="lecture">讲座/分享</option>
+            <option value="recruitment">团队招募</option>
+            <option value="volunteer">志愿服务</option>
+            <option value="studyGroup">学习小组</option>
+            <option value="competition">竞赛</option>
+            <option value="workshop">工作坊</option>
+            <option value="social">约活动/交流</option>
+            <option value="material">学习资料</option>
+            <option value="supplement">补充通知</option>
+            <option value="observation">观摩</option>
+            <option value="ad">推广/广告</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="qualitySelect">质量</label>
+          <select class="select" id="qualitySelect">
+            <option value="all">全部</option>
+            <option value="complete">信息完整</option>
+            <option value="partial">部分缺失</option>
+            <option value="suspicious">风险提示</option>
+          </select>
+        </div>
+        <input class="search" id="search" type="search" placeholder="搜索标题、内容或关键词…" />
+        <div class="right-tools">
+          <button class="btn" id="resetBtn">重置筛选</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 卡片网格 -->
+    <section class="grid" id="grid"></section>
+  </main>
+
+  <!-- 详情弹层 -->
+  <div class="modal-mask" id="modalMask">
+    <div class="modal" role="dialog" aria-modal="true">
+      <div id="modalBody"></div>
+    </div>
+  </div>
+
+  <footer class="app-footer">
+    CampusHub · 任务1：来源/类型/质量分类展示 + 风险提示 · 数据来自考核题目模拟信息
+  </footer>
+
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

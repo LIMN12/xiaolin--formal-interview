@@ -34,7 +34,7 @@
   </div>
 </section>
 
-<!-- 年度活动日历 -->
+<!-- 单月大日历 -->
 <section class="cal-section">
   <div class="cal-section__head">
     <h2 class="cal-section__title offset-ink">
@@ -42,15 +42,40 @@
       Campus Activity Calendar
     </h2>
   </div>
-  <div class="cal-year" data-cal-year>
-    <!-- JS 注入：12 个月小日历，有活动的日期高亮 -->
+
+  <!-- 月份导航 -->
+  <div class="cal-nav">
+    <button class="cal-nav__btn" data-prev aria-label="上一月">←</button>
+    <div class="cal-nav__label" data-cal-month>September 2026</div>
+    <button class="cal-nav__btn" data-next aria-label="下一月">→</button>
   </div>
+
+  <!-- 大日历网格 -->
+  <div class="cal-big" data-cal-big>
+    <!-- JS 注入：当前月 7 列大日历 -->
+  </div>
+
   <div class="cal-legend" aria-hidden="true">
     <span>当日活动数</span>
     <i class="lg0"></i><i class="lg1"></i><i class="lg2"></i><i class="lg3"></i>
     <span>3+</span>
+    <span style="margin-left:1.4rem">点击日期查看活动详情</span>
   </div>
 </section>
+
+<!-- 悬浮活动详情框 -->
+<div class="cal-popup" id="calPopup" hidden>
+  <div class="cal-popup__head">
+    <span class="cal-popup__date" id="popupDate">—</span>
+    <button class="cal-popup__close" id="popupClose" aria-label="关闭">×</button>
+  </div>
+  <div class="cal-popup__body" id="popupBody">
+    <!-- JS 注入：当天活动列表 -->
+  </div>
+  <div class="cal-popup__add">
+    <button class="cal-popup__addbtn" id="popupAdd">+ 添加活动</button>
+  </div>
+</div>
 
 <!-- 活动一览：按日期分组 -->
 <section class="cal-section cal-section--dark">
@@ -66,7 +91,7 @@
 </section>
 
 <footer class="footer">
-  CampusHub Showcase · 活动日历展示页 · 复古胶片质感
+  CampusHub Showcase · 活动日历展示页 · 复古胶片质感 · 支持自定义活动持续更新
 </footer>
 
 <!-- Hero 条纹复古背景（纯矢量） -->

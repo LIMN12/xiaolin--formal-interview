@@ -171,71 +171,196 @@ const EVENTS = [
   { date: "10-20", title: "某竞赛作品提交", time: "截止", type: "截止" },
 ];
 
-/* ---------- 渲染：页面1 活动日历 ---------- */
-function renderCalendar(d) {
-  const repo = d.repo;
+/* ---------- 渲染：页面1 活动日历（单月大日历 + 悬浮详情 + 持续添加） ---------- */
+const CAL = { year: 2026, month: 9 }; // 当前显示月（9=九月）
+const STORAGE_KEY = "campushub_custom_events";
 
-  // 注入导航
-  document.querySelector(".nav__logo b").textContent = repo.owner_login.toUpperCase();
+// 合并基础活动 + localStorage 自定义活动
+function getAllEvents() {
+  let custom = [];
+  try { custom = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]"); }
+  catch (e) { custom = []; }
+  return [...EVENTS, ...custom];
+}
 
-  // Hero 副标题
-  const hs = document.querySelector("[data-cal-sub]");
-  if (hs) hs.textContent = "校园活动台 CampusHub · 活动日历 2026 · 共 " + EVENTS.length + " 项活动";
+// 保存自定义活动到 localStorage
+function saveCustomEvent(ev) {
+  let custom = [];
+  try { custom = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]"); }
+  catch (e) { custom = []; }
+  custom.push(ev);
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(custom));
+}
 
-  // 按 月-日 聚合活动
+// 渲染单月大日历
+function renderMonthCalendar() {
+  const all = getAllEvents();
   const map = {};
-  EVENTS.forEach(e => {
-    if (!map[e.date]) map[e.date] = [];
-    map[e.date].push(e);
-  });
+  all.forEach(e => { if (!map[e.date]) map[e.date] = []; map[e.date].push(e); });
   const lvl = n => n === 0 ? "" : n === 1 ? "cal-day--lvl1" : n === 2 ? "cal-day--lvl2" : "cal-day--lvl3";
 
-  // 年度日历 2026（12 个月小日历）
-  const yc = document.querySelector("[data-cal-year]");
-  if (yc) {
-    const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-    const dow = ["S","M","T","W","T","F","S"];
-    yc.innerHTML = months.map((m, mi) => {
-      const days = new Date(2026, mi + 1, 0).getDate();
-      const first = new Date(2026, mi, 1).getDay();
-      let cells = dow.map(d => `<span class="cal-dow">${d}</span>`).join("");
-      for (let i = 0; i < first; i++) cells += `<span class="cal-day cal-day--empty"></span>`;
-      for (let day = 1; day <= days; day++) {
-        const k = (mi + 1) + "-" + day;
-        const list = map[k] || [];
-        const n = list.length;
-        cells += `<span class="cal-day ${lvl(n)}" title="${list.map(e => e.title).join(' / ') || '无活动'}">${day}</span>`;
-      }
-      return `<div class="cal-month"><div class="cal-month__name">${m}</div><div class="cal-month__grid">${cells}</div></div>`;
-    }).join("");
+  const y = CAL.year, m = CAL.month; // m: 1-12
+  const days = new Date(y, m, 0).getDate();
+  const firstDay = new Date(y, m - 1, 1).getDay();
+  const dow = ["S","M","T","W","T","F","S"];
+
+  // 月份标签
+  const label = document.querySelector("[data-cal-month]");
+  if (label) {
+    const monthNames = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+    label.textContent = monthNames[m - 1] + " " + y;
   }
 
-  // 活动一览：按日期分组
-  const ev = document.querySelector("[data-cal-events]");
-  if (ev) {
-    // 按日期排序
-    const sorted = [...EVENTS].sort((a, b) => {
-      const [am, ad] = a.date.split("-").map(Number);
-      const [bm, bd] = b.date.split("-").map(Number);
-      return am - bm || ad - bd;
-    });
-    // 按日期分组
-    const groups = {};
-    sorted.forEach(e => {
-      if (!groups[e.date]) groups[e.date] = [];
-      groups[e.date].push(e);
-    });
-    ev.innerHTML = Object.entries(groups).map(([date, list]) => {
-      const [m, day] = date.split("-");
-      return `<div class="cal-event">
-        <div class="cal-event__date">2026.${String(m).padStart(2,"0")}.${String(day).padStart(2,"0")}</div>
-        <div class="cal-event__title">
-          ${list.map(e => `<span style="display:inline-block;margin-right:.8rem"><b style="color:var(--gold-bright)">${e.time}</b> ${e.title} <small style="color:var(--cream);opacity:.6">[${e.type}]</small></span>`).join("<br>")}
-        </div>
-        <div class="cal-event__sha">${list.length} 项</div>
-      </div>`;
-    }).join("");
+  const grid = document.querySelector("[data-cal-big]");
+  if (!grid) return;
+
+  // 表头
+  let html = dow.map(d => `<span class="cal-dow">${d}</span>`).join("");
+  // 前置空格
+  for (let i = 0; i < firstDay; i++) html += `<span class="cal-day cal-day--empty"></span>`;
+  // 日期
+  for (let day = 1; day <= days; day++) {
+    const k = m + "-" + day;
+    const list = map[k] || [];
+    const n = list.length;
+    const dots = n > 0 ? `<span class="cal-day__dots">${list.slice(0,3).map(()=>'<span class="cal-day__dot"></span>').join("")}</span>` : "";
+    html += `<span class="cal-day ${lvl(n)}" data-date="${k}">
+      <span class="cal-day__num">${day}</span>
+      ${dots}
+    </span>`;
   }
+  grid.innerHTML = html;
+
+  // 绑定点击事件
+  grid.querySelectorAll(".cal-day:not(.cal-day--empty)").forEach(cell => {
+    cell.addEventListener("click", () => showPopup(cell.dataset.date, cell));
+  });
+}
+
+// 悬浮显示当天活动
+function showPopup(dateStr, anchorEl) {
+  const all = getAllEvents();
+  const list = all.filter(e => e.date === dateStr);
+  const [m, d] = dateStr.split("-").map(Number);
+  const dateObj = new Date(CAL.year, m - 1, d);
+  const dateLabel = dateObj.toLocaleDateString("zh-CN", { year: "numeric", month: "long", day: "numeric", weekday: "long" });
+
+  document.getElementById("popupDate").textContent = dateLabel;
+  const body = document.getElementById("popupBody");
+  if (list.length === 0) {
+    body.innerHTML = `<div class="cal-popup__empty">当日暂无活动<br>点击下方按钮添加</div>`;
+  } else {
+    body.innerHTML = list.map(e =>
+      `<div class="cal-popup__item">
+        <div class="cal-popup__item-title">${e.title}</div>
+        <div class="cal-popup__item-meta"><span class="t">${e.type}</span>${e.time}</div>
+      </div>`).join("");
+  }
+
+  const popup = document.getElementById("calPopup");
+  popup.hidden = false;
+
+  // 定位到点击格子附近，避免超出视口
+  const rect = anchorEl.getBoundingClientRect();
+  const vw = window.innerWidth, vh = window.innerHeight;
+  const pw = 340, ph = popup.offsetHeight || 300;
+  let left = rect.right + 12;
+  let top = rect.top;
+  if (left + pw > vw) left = rect.left - pw - 12;
+  if (top + ph > vh) top = vh - ph - 16;
+  if (top < 16) top = 16;
+  popup.style.left = left + "px";
+  popup.style.top = top + "px";
+}
+
+// 关闭悬浮框
+function closePopup() {
+  document.getElementById("calPopup").hidden = true;
+}
+
+// 添加活动（prompt 输入，写入 localStorage，刷新日历）
+function addEventForDate(dateStr) {
+  const title = prompt("请输入活动名称：");
+  if (!title) return;
+  const time = prompt("请输入活动时间（如 19:00 或 全天）：") || "待定";
+  const type = prompt("请输入活动类型（如 讲座/志愿/截止）：") || "自定义";
+  const ev = { date: dateStr, title, time, type };
+  saveCustomEvent(ev);
+  closePopup();
+  renderMonthCalendar();
+  renderEventTimeline();
+}
+
+// 活动一览：按日期分组
+function renderEventTimeline() {
+  const all = getAllEvents();
+  const sorted = [...all].sort((a, b) => {
+    const [am, ad] = a.date.split("-").map(Number);
+    const [bm, bd] = b.date.split("-").map(Number);
+    return am - bm || ad - bd;
+  });
+  const groups = {};
+  sorted.forEach(e => { if (!groups[e.date]) groups[e.date] = []; groups[e.date].push(e); });
+
+  const ev = document.querySelector("[data-cal-events]");
+  if (!ev) return;
+  ev.innerHTML = Object.entries(groups).map(([date, list]) => {
+    const [m, day] = date.split("-");
+    return `<div class="cal-event">
+      <div class="cal-event__date">2026.${String(m).padStart(2,"0")}.${String(day).padStart(2,"0")}</div>
+      <div class="cal-event__title">
+        ${list.map(e => `<span style="display:inline-block;margin-right:.8rem"><b style="color:var(--gold-bright)">${e.time}</b> ${e.title} <small style="color:var(--cream);opacity:.6">[${e.type}]</small></span>`).join("<br>")}
+      </div>
+      <div class="cal-event__sha">${list.length} 项</div>
+    </div>`;
+  }).join("");
+}
+
+/* ---------- 渲染：页面1 入口 ---------- */
+function renderCalendar(d) {
+  const repo = d.repo;
+  document.querySelector(".nav__logo b").textContent = repo.owner_login.toUpperCase();
+
+  const allCount = getAllEvents().length;
+  const hs = document.querySelector("[data-cal-sub]");
+  if (hs) hs.textContent = "校园活动台 CampusHub · 活动日历 2026 · 共 " + allCount + " 项活动";
+
+  // 渲染单月日历
+  renderMonthCalendar();
+
+  // 活动一览
+  renderEventTimeline();
+
+  // 月份切换
+  document.querySelector("[data-prev]")?.addEventListener("click", () => {
+    CAL.month--;
+    if (CAL.month < 1) { CAL.month = 12; CAL.year--; }
+    renderMonthCalendar();
+  });
+  document.querySelector("[data-next]")?.addEventListener("click", () => {
+    CAL.month++;
+    if (CAL.month > 12) { CAL.month = 1; CAL.year++; }
+    renderMonthCalendar();
+  });
+
+  // 悬浮框关闭
+  document.getElementById("popupClose")?.addEventListener("click", closePopup);
+  document.addEventListener("click", (e) => {
+    const popup = document.getElementById("calPopup");
+    if (!popup.hidden && !popup.contains(e.target) && !e.target.closest(".cal-day")) closePopup();
+  });
+
+  // 添加活动
+  let currentPopupDate = null;
+  document.getElementById("popupAdd")?.addEventListener("click", () => {
+    const dateText = document.getElementById("popupDate").textContent;
+    // 从中文日期解析月日
+    const match = dateText.match(/(\d+)年(\d+)月(\d+)日/);
+    if (match) {
+      currentPopupDate = match[2] + "-" + match[3];
+      addEventForDate(currentPopupDate);
+    }
+  });
 }
 
 /* ---------- 渲染：页面2 积分榜 ---------- */

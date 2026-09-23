@@ -424,29 +424,78 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .cal-section--dark .cal-section__title{color:var(--cream)}
 .cal-section__title small{display:block;font-family:var(--font-type);font-size:.74rem;letter-spacing:.2em;opacity:.65;margin-bottom:.4rem}
 
-/* 年度日历网格：12 个月 */
-.cal-year{display:grid;grid-template-columns:repeat(12,1fr);gap:1rem;max-width:1500px;margin:0 auto}
-.cal-month{background:var(--cream);border:1px solid var(--ink);padding:.7rem;box-shadow:3px 3px 0 var(--rust-deep)}
-.cal-month__name{font-family:var(--font-display);font-weight:600;font-size:.7rem;text-transform:uppercase;letter-spacing:.14em;color:var(--rust);margin-bottom:.5rem;text-align:center}
-.cal-month__grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px}
-.cal-dow{font-family:var(--font-type);font-size:.5rem;text-align:center;opacity:.5;text-transform:uppercase}
+/* 月份导航 */
+.cal-nav{display:flex;align-items:center;justify-content:center;gap:1.6rem;max-width:900px;margin:0 auto 1.6rem}
+.cal-nav__btn{
+  font-family:var(--font-display);font-size:1.6rem;width:52px;height:52px;
+  background:var(--cream);border:2px solid var(--ink);border-radius:50%;
+  box-shadow:3px 3px 0 var(--rust-deep);transition:transform .15s,box-shadow .15s;
+  display:flex;align-items:center;justify-content:center;color:var(--rust);
+}
+.cal-nav__btn:hover{background:var(--rust);color:var(--cream)}
+.cal-nav__btn:active{transform:translate(3px,3px);box-shadow:0 0 0 var(--rust-deep)}
+.cal-nav__label{font-family:var(--font-display);font-weight:600;font-size:1.8rem;text-transform:uppercase;letter-spacing:.1em;color:var(--ink);min-width:240px;text-align:center}
+
+/* 单月大日历 */
+.cal-big{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;max-width:1100px;margin:0 auto;background:var(--cream);border:2px solid var(--ink);padding:1rem;box-shadow:6px 6px 0 var(--rust-deep)}
+.cal-dow{
+  font-family:var(--font-type);font-size:.8rem;font-weight:600;text-align:center;
+  padding:.6rem 0;color:var(--rust);text-transform:uppercase;letter-spacing:.1em;
+  border-bottom:2px solid var(--ink);
+}
 .cal-day{
   aspect-ratio:1/1;background:var(--paper-deep);
-  font-family:var(--font-type);font-size:.52rem;color:var(--ink);opacity:.5;
-  display:flex;align-items:center;justify-content:center;
+  font-family:var(--font-display);font-size:1.1rem;font-weight:500;color:var(--ink);
+  display:flex;flex-direction:column;align-items:flex-start;justify-content:flex-start;
+  padding:.5rem;cursor:pointer;position:relative;border-radius:3px;
+  transition:transform .15s,box-shadow .15s;
 }
-.cal-day--empty{background:transparent;opacity:.15}
-.cal-day--lvl1{background:var(--gold);opacity:.9;color:var(--ink)}
-.cal-day--lvl2{background:var(--orange);opacity:.95;color:var(--cream)}
-.cal-day--lvl3{background:var(--rust);opacity:1;color:var(--cream);box-shadow:inset 0 0 0 2px var(--gold-bright)}
-.cal-day--today{box-shadow:inset 0 0 0 2px var(--ink)}
+.cal-day:hover{transform:translate(-2px,-2px);box-shadow:3px 3px 0 var(--rust-deep);z-index:2}
+.cal-day--empty{background:transparent;cursor:default;opacity:.2}
+.cal-day--empty:hover{transform:none;box-shadow:none}
+.cal-day--lvl1{background:var(--gold);color:var(--ink)}
+.cal-day--lvl2{background:var(--orange);color:var(--cream)}
+.cal-day--lvl3{background:var(--rust);color:var(--cream);box-shadow:inset 0 0 0 2px var(--gold-bright)}
+.cal-day--today{outline:3px solid var(--ink);outline-offset:-3px}
+.cal-day__num{font-weight:700}
+.cal-day__dots{display:flex;gap:3px;margin-top:auto;flex-wrap:wrap}
+.cal-day__dot{width:6px;height:6px;border-radius:50%;background:var(--ink);opacity:.5}
 
-.cal-legend{display:flex;gap:.6rem;align-items:center;justify-content:center;margin-top:1.6rem;font-family:var(--font-type);font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink);opacity:.8}
+.cal-legend{display:flex;gap:.6rem;align-items:center;justify-content:center;margin-top:1.6rem;font-family:var(--font-type);font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink);opacity:.8;flex-wrap:wrap}
 .cal-legend i{display:inline-block;width:14px;height:14px;border:1px solid var(--ink)}
 .cal-legend .lg0{background:var(--paper-deep)}
 .cal-legend .lg1{background:var(--gold)}
 .cal-legend .lg2{background:var(--orange)}
 .cal-legend .lg3{background:var(--rust)}
+
+/* 悬浮活动详情框 */
+.cal-popup{
+  position:fixed;z-index:1000;width:340px;max-width:90vw;
+  background:var(--cream);border:2px solid var(--ink);border-radius:6px;
+  box-shadow:8px 8px 0 var(--shadow);overflow:hidden;
+  font-family:var(--font-serif);
+}
+.cal-popup[hidden]{display:none}
+.cal-popup__head{display:flex;justify-content:space-between;align-items:center;padding:.9rem 1.1rem;background:var(--ink);color:var(--cream)}
+.cal-popup__date{font-family:var(--font-display);font-weight:600;font-size:1.1rem;letter-spacing:.04em}
+.cal-popup__close{font-size:1.6rem;line-height:1;color:var(--cream);padding:0 4px}
+.cal-popup__close:hover{color:var(--gold-bright)}
+.cal-popup__body{padding:1rem 1.1rem;max-height:320px;overflow-y:auto}
+.cal-popup__item{padding:.6rem 0;border-bottom:1px dashed var(--paper-deep)}
+.cal-popup__item:last-child{border-bottom:none}
+.cal-popup__item-title{font-weight:700;font-size:1rem;color:var(--ink);margin-bottom:.2rem}
+.cal-popup__item-meta{font-family:var(--font-type);font-size:.78rem;color:var(--rust);letter-spacing:.04em}
+.cal-popup__item-meta .t{color:var(--olive);margin-right:.5rem}
+.cal-popup__empty{font-family:var(--font-type);font-size:.85rem;color:var(--ink);opacity:.5;text-align:center;padding:1rem 0}
+.cal-popup__add{padding:.7rem 1.1rem;border-top:1px solid var(--paper-deep);background:var(--paper)}
+.cal-popup__addbtn{
+  width:100%;padding:.6rem;font-family:var(--font-display);font-weight:600;
+  font-size:.95rem;letter-spacing:.06em;text-transform:uppercase;
+  background:var(--rust);color:var(--cream);border:1px solid var(--ink);border-radius:3px;
+  box-shadow:2px 2px 0 var(--ink);cursor:pointer;
+}
+.cal-popup__addbtn:hover{background:var(--rust-deep)}
+.cal-popup__addbtn:active{transform:translate(2px,2px);box-shadow:0 0 0 var(--ink)}
 
 /* 时间线 */
 .cal-timeline{max-width:1100px;margin:0 auto}
@@ -474,10 +523,13 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
   .stats-card{position:static;margin-top:1.2rem;right:auto;bottom:auto}
   .stab-row{grid-template-columns:48px 1fr 120px;gap:.6rem;font-size:.9rem}
   .stab-row__sha,.stab-row__author{display:none}
-  .cal-year{grid-template-columns:repeat(2,1fr);gap:.6rem}
+  .cal-big{gap:4px;padding:.6rem}
+  .cal-day{font-size:.9rem;padding:.35rem}
   .cal-event{grid-template-columns:1fr;gap:.3rem}
   .cal-event__sha{grid-column:1}
 }
 @media (max-width:480px){
-  .cal-year{grid-template-columns:1fr}
+  .cal-big{gap:3px;padding:.4rem}
+  .cal-day{font-size:.8rem;padding:.25rem}
+  .cal-day__dot{width:4px;height:4px}
 }

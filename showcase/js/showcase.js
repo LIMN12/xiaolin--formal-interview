@@ -174,6 +174,7 @@ const EVENTS = [
 /* ---------- 渲染：页面1 活动日历（单月大日历 + 悬浮详情 + 持续添加） ---------- */
 const CAL = { year: 2026, month: 9 }; // 当前显示月（9=九月）
 const STORAGE_KEY = "campushub_custom_events";
+let popupCurrentDate = null; // 悬浮框当前选中的日期
 
 // 合并基础活动 + localStorage 自定义活动
 function getAllEvents() {
@@ -192,57 +193,67 @@ function saveCustomEvent(ev) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(custom));
 }
 
-// 渲染单月大日历
+// 渲染连续 3 个月日历（中间为当前月，左右各一月）
 function renderMonthCalendar() {
   const all = getAllEvents();
   const map = {};
   all.forEach(e => { if (!map[e.date]) map[e.date] = []; map[e.date].push(e); });
   const lvl = n => n === 0 ? "" : n === 1 ? "cal-day--lvl1" : n === 2 ? "cal-day--lvl2" : "cal-day--lvl3";
+  const dow = ["S","M","T","W","T","F","S"];
+  const monthNames = ["January","February","March","April","May","June","July","August","September","October","November","December"];
 
   const y = CAL.year, m = CAL.month; // m: 1-12
-  const days = new Date(y, m, 0).getDate();
-  const firstDay = new Date(y, m - 1, 1).getDay();
-  const dow = ["S","M","T","W","T","F","S"];
 
-  // 月份标签
+  // 月份标签（显示中间月）
   const label = document.querySelector("[data-cal-month]");
-  if (label) {
-    const monthNames = ["January","February","March","April","May","June","July","August","September","October","November","December"];
-    label.textContent = monthNames[m - 1] + " " + y;
+  if (label) label.textContent = monthNames[m - 1] + " " + y;
+
+  // 生成连续 3 个月：上一月、当前月、下一月
+  const months = [];
+  for (let offset = -1; offset <= 1; offset++) {
+    let mm = m + offset, yy = y;
+    if (mm < 1) { mm = 12; yy--; }
+    if (mm > 12) { mm = 1; yy++; }
+    months.push({ y: yy, m: mm, focus: offset === 0 });
   }
 
   const grid = document.querySelector("[data-cal-big]");
   if (!grid) return;
 
-  // 表头
-  let html = dow.map(d => `<span class="cal-dow">${d}</span>`).join("");
-  // 前置空格
-  for (let i = 0; i < firstDay; i++) html += `<span class="cal-day cal-day--empty"></span>`;
-  // 日期
-  for (let day = 1; day <= days; day++) {
-    const k = m + "-" + day;
-    const list = map[k] || [];
-    const n = list.length;
-    const dots = n > 0 ? `<span class="cal-day__dots">${list.slice(0,3).map(()=>'<span class="cal-day__dot"></span>').join("")}</span>` : "";
-    html += `<span class="cal-day ${lvl(n)}" data-date="${k}">
-      <span class="cal-day__num">${day}</span>
-      ${dots}
-    </span>`;
-  }
-  grid.innerHTML = html;
+  grid.innerHTML = months.map(mo => {
+    const days = new Date(mo.y, mo.m, 0).getDate();
+    const firstDay = new Date(mo.y, mo.m - 1, 1).getDay();
+    let cells = dow.map(d => `<span class="cal-dow">${d}</span>`).join("");
+    for (let i = 0; i < firstDay; i++) cells += `<span class="cal-day cal-day--empty"></span>`;
+    for (let day = 1; day <= days; day++) {
+      const k = mo.m + "-" + day;
+      const list = map[k] || [];
+      const n = list.length;
+      const dots = n > 0 ? `<span class="cal-day__dots">${list.slice(0,3).map(()=>'<span class="cal-day__dot"></span>').join("")}</span>` : "";
+      cells += `<span class="cal-day ${lvl(n)}" data-date="${k}" data-year="${mo.y}">
+        <span class="cal-day__num">${day}</span>
+        ${dots}
+      </span>`;
+    }
+    return `<div class="cal-month ${mo.focus ? "cal-month--focus" : ""}">
+      <div class="cal-month__name">${monthNames[mo.m - 1]} ${mo.y}</div>
+      <div class="cal-month__grid">${cells}</div>
+    </div>`;
+  }).join("");
 
   // 绑定点击事件
   grid.querySelectorAll(".cal-day:not(.cal-day--empty)").forEach(cell => {
-    cell.addEventListener("click", () => showPopup(cell.dataset.date, cell));
+    cell.addEventListener("click", () => showPopup(cell.dataset.date, Number(cell.dataset.year)));
   });
 }
 
-// 悬浮显示当天活动
-function showPopup(dateStr, anchorEl) {
+// 悬浮显示当天活动（居中 modal）
+function showPopup(dateStr, year) {
   const all = getAllEvents();
   const list = all.filter(e => e.date === dateStr);
   const [m, d] = dateStr.split("-").map(Number);
-  const dateObj = new Date(CAL.year, m - 1, d);
+  const y = year || CAL.year;
+  const dateObj = new Date(y, m - 1, d);
   const dateLabel = dateObj.toLocaleDateString("zh-CN", { year: "numeric", month: "long", day: "numeric", weekday: "long" });
 
   document.getElementById("popupDate").textContent = dateLabel;
@@ -257,20 +268,8 @@ function showPopup(dateStr, anchorEl) {
       </div>`).join("");
   }
 
-  const popup = document.getElementById("calPopup");
-  popup.hidden = false;
-
-  // 定位到点击格子附近，避免超出视口
-  const rect = anchorEl.getBoundingClientRect();
-  const vw = window.innerWidth, vh = window.innerHeight;
-  const pw = 340, ph = popup.offsetHeight || 300;
-  let left = rect.right + 12;
-  let top = rect.top;
-  if (left + pw > vw) left = rect.left - pw - 12;
-  if (top + ph > vh) top = vh - ph - 16;
-  if (top < 16) top = 16;
-  popup.style.left = left + "px";
-  popup.style.top = top + "px";
+  document.getElementById("calPopup").hidden = false;
+  popupCurrentDate = dateStr;
 }
 
 // 关闭悬浮框
@@ -345,21 +344,18 @@ function renderCalendar(d) {
 
   // 悬浮框关闭
   document.getElementById("popupClose")?.addEventListener("click", closePopup);
-  document.addEventListener("click", (e) => {
-    const popup = document.getElementById("calPopup");
-    if (!popup.hidden && !popup.contains(e.target) && !e.target.closest(".cal-day")) closePopup();
+  // 点击遮罩（非卡片内容）关闭
+  document.getElementById("calPopup")?.addEventListener("click", (e) => {
+    if (e.target.id === "calPopup") closePopup();
+  });
+  // ESC 关闭
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") closePopup();
   });
 
   // 添加活动
-  let currentPopupDate = null;
   document.getElementById("popupAdd")?.addEventListener("click", () => {
-    const dateText = document.getElementById("popupDate").textContent;
-    // 从中文日期解析月日
-    const match = dateText.match(/(\d+)年(\d+)月(\d+)日/);
-    if (match) {
-      currentPopupDate = match[2] + "-" + match[3];
-      addEventForDate(currentPopupDate);
-    }
+    if (popupCurrentDate) addEventForDate(popupCurrentDate);
   });
 }
 

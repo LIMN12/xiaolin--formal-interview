@@ -29,58 +29,44 @@
   <div class="cal-hero__bg" aria-hidden="true" id="calArt"></div>
   <div class="cal-hero__veil"></div>
   <div class="cal-hero__content">
-    <h1 class="cal-hero__title offset-text">CONTRIBUTIONS</h1>
-    <p class="cal-hero__sub" data-cal-sub>校园活动台 CampusHub · 2026</p>
+    <h1 class="cal-hero__title offset-text">ACTIVITIES</h1>
+    <p class="cal-hero__sub" data-cal-sub>校园活动台 CampusHub · 活动日历 2026</p>
   </div>
 </section>
 
-<!-- 年度贡献日历 -->
+<!-- 年度活动日历 -->
 <section class="cal-section">
   <div class="cal-section__head">
     <h2 class="cal-section__title offset-ink">
       <small>C·H 16 · LIMN12 · 2026</small>
-      Year in Commits
+      Campus Activity Calendar
     </h2>
   </div>
   <div class="cal-year" data-cal-year>
-    <!-- JS 注入：12 个月小日历，09-19 高亮 -->
+    <!-- JS 注入：12 个月小日历，有活动的日期高亮 -->
   </div>
   <div class="cal-legend" aria-hidden="true">
-    <span>Less</span>
+    <span>当日活动数</span>
     <i class="lg0"></i><i class="lg1"></i><i class="lg2"></i><i class="lg3"></i>
-    <span>More</span>
-    <span style="margin-left:1.4rem">数据源自 GitHub REST API</span>
+    <span>3+</span>
   </div>
 </section>
 
-<!-- 时间线：commits -->
+<!-- 活动一览：按日期分组 -->
 <section class="cal-section cal-section--dark">
   <div class="cal-section__head">
     <h2 class="cal-section__title offset-text">
-      <small>Commits Timeline</small>
-      Three Commits, One Campus
+      <small>Activities by Date</small>
+      Upcoming &amp; Ongoing
     </h2>
   </div>
-  <div class="cal-timeline" data-cal-timeline>
-    <!-- JS 注入：commits 倒序时间线 -->
+  <div class="cal-timeline" data-cal-events>
+    <!-- JS 注入：活动按日期分组列表 -->
   </div>
-</section>
-
-<!-- 仓库统计 + 续接 -->
-<section class="cal-section">
-  <div style="text-align:center;margin-bottom:2.2rem">
-    <span class="stamp">Repo Standings · 2026-09-19</span>
-  </div>
-  <div class="finale-grid" data-finale>
-    <!-- JS 注入：commits/files/issues/releases 统计 -->
-  </div>
-  <p class="screen__meta" style="text-align:center;margin-top:3rem">
-    <a href="standings.html" style="color:var(--rust);font-family:var(--font-display);font-size:1.1rem;letter-spacing:.2em;text-transform:uppercase">→ 查看积分榜 Standings</a>
-  </p>
 </section>
 
 <footer class="footer">
-  CampusHub Showcase · 贡献日历展示页 · 复古胶片质感 · 数据调取自 GitHub REST API
+  CampusHub Showcase · 活动日历展示页 · 复古胶片质感
 </footer>
 
 <!-- Hero 条纹复古背景（纯矢量） -->

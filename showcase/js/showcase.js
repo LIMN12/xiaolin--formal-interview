@@ -145,25 +145,48 @@ const ILL = {
   </svg>`,
 };
 
-/* ---------- 渲染：页面1 贡献日历图（任务四页面优化） ---------- */
+/* ---------- 校园活动数据（按日期组织，供日历展示） ---------- */
+// 来源：campus-hub 26 条题目信息中可提取出明确日期的活动
+// 字段：date（月-日）、title、time、type
+const EVENTS = [
+  { date: "9-18",  title: "编程竞赛直播", time: "19:30（已结束，回放9.20上传）", type: "竞赛" },
+  { date: "9-19",  title: "AI应用入门公开课", time: "19:00", type: "讲座" },
+  { date: "9-19",  title: "项目经验分享会", time: "15:00—16:30", type: "分享" },
+  { date: "9-19",  title: "学习小组首次活动", time: "19:30", type: "学习小组" },
+  { date: "9-20",  title: "某活动宣讲", time: "14:30", type: "宣讲" },
+  { date: "9-20",  title: "某讲座", time: "19:00", type: "讲座" },
+  { date: "9-20",  title: "某工作坊", time: "16:00", type: "工作坊" },
+  { date: "9-21",  title: "蓝桥杯训练营首训", time: "19:30", type: "训练营" },
+  { date: "9-21",  title: "某团队招募说明会", time: "19:00—20:30", type: "招募" },
+  { date: "9-21",  title: "某组队线下活动", time: "19:00—20:30", type: "组队" },
+  { date: "9-21",  title: "某社交活动", time: "晚上", type: "交流" },
+  { date: "9-21",  title: "某观摩活动", time: "15:00", type: "观摩" },
+  { date: "9-22",  title: "创新团队招募截止", time: "18:00", type: "截止" },
+  { date: "9-23",  title: "学习小组开班", time: "每周三19:30（共6周）", type: "学习小组" },
+  { date: "9-23",  title: "某竞赛创意方案截止", time: "23:59", type: "截止" },
+  { date: "9-24",  title: "蓝桥杯报名截止", time: "22:00", type: "截止" },
+  { date: "9-27",  title: "志愿服务活动", time: "8:30—17:00", type: "志愿" },
+  { date: "9-30",  title: "某竞赛最终作品提交", time: "截止", type: "截止" },
+  { date: "10-5",  title: "某竞赛报名截止", time: "23:59", type: "截止" },
+  { date: "10-20", title: "某竞赛作品提交", time: "截止", type: "截止" },
+];
+
+/* ---------- 渲染：页面1 活动日历 ---------- */
 function renderCalendar(d) {
   const repo = d.repo;
-  const commits = d.commits;
-  const latest = commits[0];
 
   // 注入导航
   document.querySelector(".nav__logo b").textContent = repo.owner_login.toUpperCase();
 
   // Hero 副标题
   const hs = document.querySelector("[data-cal-sub]");
-  if (hs) hs.textContent = repo.full_name + " · 最近推送 " + fmt.date(repo.pushed_at || latest.date);
+  if (hs) hs.textContent = "校园活动台 CampusHub · 活动日历 2026 · 共 " + EVENTS.length + " 项活动";
 
-  // 按 月-日 聚合 commit 计数
+  // 按 月-日 聚合活动
   const map = {};
-  commits.forEach(c => {
-    const dt = new Date(c.date);
-    const k = (dt.getMonth() + 1) + "-" + dt.getDate();
-    map[k] = (map[k] || 0) + 1;
+  EVENTS.forEach(e => {
+    if (!map[e.date]) map[e.date] = [];
+    map[e.date].push(e);
   });
   const lvl = n => n === 0 ? "" : n === 1 ? "cal-day--lvl1" : n === 2 ? "cal-day--lvl2" : "cal-day--lvl3";
 
@@ -179,32 +202,39 @@ function renderCalendar(d) {
       for (let i = 0; i < first; i++) cells += `<span class="cal-day cal-day--empty"></span>`;
       for (let day = 1; day <= days; day++) {
         const k = (mi + 1) + "-" + day;
-        const n = map[k] || 0;
-        cells += `<span class="cal-day ${lvl(n)}">${day}</span>`;
+        const list = map[k] || [];
+        const n = list.length;
+        cells += `<span class="cal-day ${lvl(n)}" title="${list.map(e => e.title).join(' / ') || '无活动'}">${day}</span>`;
       }
       return `<div class="cal-month"><div class="cal-month__name">${m}</div><div class="cal-month__grid">${cells}</div></div>`;
     }).join("");
   }
 
-  // 时间线：commits 倒序
-  const tl = document.querySelector("[data-cal-timeline]");
-  if (tl) {
-    tl.innerHTML = commits.map(c =>
-      `<div class="cal-event">
-        <div class="cal-event__date">${fmt.date(c.date)} ${fmt.time(c.date)}</div>
-        <div class="cal-event__title">${c.message}<small>${c.author} · ${c.role || "commit"}</small></div>
-        <div class="cal-event__sha">${c.short}</div>
-      </div>`).join("");
-  }
-
-  // 统计
-  const fg = document.querySelector("[data-finale]");
-  if (fg) {
-    fg.innerHTML = `
-      <div class="finale-cell"><b>${d.counts.commits}</b><span>Commits</span></div>
-      <div class="finale-cell"><b>${d.counts.files}</b><span>Files</span></div>
-      <div class="finale-cell"><b>${d.counts.issues}</b><span>Issues</span></div>
-      <div class="finale-cell"><b>${d.counts.releases}</b><span>Releases</span></div>`;
+  // 活动一览：按日期分组
+  const ev = document.querySelector("[data-cal-events]");
+  if (ev) {
+    // 按日期排序
+    const sorted = [...EVENTS].sort((a, b) => {
+      const [am, ad] = a.date.split("-").map(Number);
+      const [bm, bd] = b.date.split("-").map(Number);
+      return am - bm || ad - bd;
+    });
+    // 按日期分组
+    const groups = {};
+    sorted.forEach(e => {
+      if (!groups[e.date]) groups[e.date] = [];
+      groups[e.date].push(e);
+    });
+    ev.innerHTML = Object.entries(groups).map(([date, list]) => {
+      const [m, day] = date.split("-");
+      return `<div class="cal-event">
+        <div class="cal-event__date">2026.${String(m).padStart(2,"0")}.${String(day).padStart(2,"0")}</div>
+        <div class="cal-event__title">
+          ${list.map(e => `<span style="display:inline-block;margin-right:.8rem"><b style="color:var(--gold-bright)">${e.time}</b> ${e.title} <small style="color:var(--cream);opacity:.6">[${e.type}]</small></span>`).join("<br>")}
+        </div>
+        <div class="cal-event__sha">${list.length} 项</div>
+      </div>`;
+    }).join("");
   }
 }
 
